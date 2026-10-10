@@ -1,8 +1,3 @@
 window.AZS=window.AZS||{};
-/* ------------------------------------------------------------------
-   Пользователи редактора и их права.
-   Роли: admin (Администратор), editor (Редактор), author (Автор).
-   Пароль хранится как хэш (SHA-256 от salt + ":" + пароль).
------------------------------------------------------------------- */
-window.AZS.usersUpdatedAt="2026-10-10T14:38:31.455Z";
-window.AZS.users=[{"id":"u_admin","login":"admin","name":"Администратор сайта","email":"azstec@mail.ru","role":"admin","active":true,"salt":"229044a73e30173c","hash":"ae8d3ae138c8b67619d9b2488bd1602a6da015176490957ed784202b8aad1abd","permissions":{"news.view":true,"news.create":true,"news.editOwn":true,"news.editAny":true,"news.publish":true,"news.delete":true,"articles.view":true,"articles.create":true,"articles.editOwn":true,"articles.editAny":true,"articles.publish":true,"articles.delete":true,"users.manage":true},"createdAt":"2026-01-01T00:00:00.000Z"}];
+window.AZS.usersUpdatedAt="2026-10-10T14:41:30.159Z";
+window.AZS.users=[{"id":"u_admin","login":"admin","name":"Администратор сайта","email":"azstec@mail.ru","role":"admin","active":true,"salt":"229044a73e30173c","hash":"ae8d3ae138c8b67619d9b2488bd1602a6da015176490957ed784202b8aad1abd","permissions":{"news.view":true,"news.create":true,"news.editOwn":true,"news.editAny":true,"news.publish":true,"news.delete":true,"articles.view":true,"articles.create":true,"articles.editOwn":true,"articles.editAny":true,"articles.publish":true,"articles.delete":true,"users.manage":true},"createdAt":"2026-01-01T00:00:00.000Z"},{"role":"author","active":true,"name":"тест","login":"test","email":"stupapupa228777@gmail.com","permissions":{"news.view":true,"news.create":true,"news.editOwn":true,"news.editAny":false,"news.publish":false,"news.delete":false,"articles.view":true,"articles.create":true,"articles.editOwn":true,"articles.editAny":false,"articles.publish":false,"articles.delete":false,"users.manage":false},"salt":"2132d4a39eda2a68","hash":"43eb8e58ea902c51001b2d28a3588e4db288ca11ee31751aac7bc259a7e3a73d","id":"u_mv2i5jbkqrlu","createdAt":"2026-10-10T14:41:26.288Z"}];
