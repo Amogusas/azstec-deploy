@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Служебные страницы не индексируем
+Disallow: /admin.html
+Disallow: /cart.html
+Disallow: /checkout.html
+
+Sitemap: https://azstec.ru/sitemap.xml
