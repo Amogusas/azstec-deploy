@@ -2,13 +2,6 @@
 opencode.json
 opencode.txt
 
-# Local Netlify folder
-.netlify
-
-# Cloudflare Pages (собранная папка и кэш wrangler)
-.deploy
-.wrangler
-
-# Node
+# Node (на случай локальных экспериментов)
 node_modules
 package-lock.json
