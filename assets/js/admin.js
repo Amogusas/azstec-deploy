@@ -392,7 +392,15 @@
     document.body.appendChild(a); a.click();
     setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 0);
   }
-  const usersExport = () => 'window.AZS=window.AZS||{};\nwindow.AZS.users=' + JSON.stringify(AZS.usersData || []) + ';\n';
+  const usersExport = () => {
+    /* Проставляем новую версию — чтобы опубликованный файл перекрыл
+       устаревший кэш на других устройствах. */
+    AZS.usersUpdatedAt = new Date().toISOString();
+    AZS.saveUsersData(AZS.usersData);
+    return 'window.AZS=window.AZS||{};\n'
+      + 'window.AZS.usersUpdatedAt=' + JSON.stringify(AZS.usersUpdatedAt) + ';\n'
+      + 'window.AZS.users=' + JSON.stringify(AZS.usersData || []) + ';\n';
+  };
   function exportNewsFile() { download('news.js', AZS.newsExport()); AZS.toast('Файл news.js сформирован'); }
   function exportUsersFile() { download('users.js', usersExport()); AZS.toast('Файл users.js сформирован'); }
 

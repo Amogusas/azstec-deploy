@@ -30,18 +30,22 @@
   }
   AZS.normalizeItems = function (list) { return (list || []).map(normalizeItem); };
 
-  function readLocal() {
+  function readCache() {
     try {
       const raw = localStorage.getItem(KEY);
       if (!raw) return null;
       const d = JSON.parse(raw);
-      return Array.isArray(d) ? d : null;
+      if (Array.isArray(d)) return { v: null, items: d };            // старый формат
+      if (d && Array.isArray(d.items)) return d;
+      return null;
     } catch (e) { return null; }
   }
 
+  const fileVersion = String(AZS.newsUpdatedAt || '');
   const base = Array.isArray(AZS.newsData) ? AZS.newsData.slice() : [];
-  const local = readLocal();
-  AZS.newsData = AZS.normalizeItems(local || base);
+  const cache = readCache();
+  /* Кэш используем только если он от той же версии файла. Иначе — файл. */
+  AZS.newsData = AZS.normalizeItems((cache && cache.v != null && cache.v === fileVersion) ? cache.items : base);
 
   /* Публичный сайт читает AZS.news / AZS.articles — только опубликованное. */
   AZS.applyNews = function () {
@@ -53,7 +57,7 @@
 
   AZS.saveNewsData = function (list) {
     AZS.newsData = AZS.normalizeItems(list);
-    try { localStorage.setItem(KEY, JSON.stringify(AZS.newsData)); } catch (e) {}
+    try { localStorage.setItem(KEY, JSON.stringify({ v: AZS.newsUpdatedAt || fileVersion, items: AZS.newsData })); } catch (e) {}
     AZS.applyNews();
   };
 
@@ -64,8 +68,13 @@
   };
 
   AZS.newsExport = function () {
-    return 'window.AZS=window.AZS||{};\nwindow.AZS.newsData='
-      + JSON.stringify(AZS.newsData || []) + ';\n';
+    /* Проставляем новую версию — чтобы опубликованный файл перекрыл
+       устаревший кэш на других устройствах. */
+    AZS.newsUpdatedAt = new Date().toISOString();
+    AZS.saveNewsData(AZS.newsData);
+    return 'window.AZS=window.AZS||{};\n'
+      + 'window.AZS.newsUpdatedAt=' + JSON.stringify(AZS.newsUpdatedAt) + ';\n'
+      + 'window.AZS.newsData=' + JSON.stringify(AZS.newsData || []) + ';\n';
   };
 
   AZS.applyNews();

@@ -62,20 +62,29 @@
   };
 
   /* ---------- Хранилище пользователей ---------- */
-  function readLocalUsers() {
+  /* Версия файла data/users.js. Меняется при каждой выгрузке из редактора,
+     поэтому опубликованный файл перекрывает устаревший кэш на любом устройстве. */
+  const fileVersion = String(AZS.usersUpdatedAt || '');
+  const baseUsers = Array.isArray(AZS.users) ? AZS.users.slice() : [];
+
+  /* Кэш храним вместе с версией файла, из которого он получен. */
+  function readCache() {
     try {
       const raw = localStorage.getItem(USERS_KEY);
       if (!raw) return null;
       const d = JSON.parse(raw);
-      return Array.isArray(d) ? d : null;
+      if (Array.isArray(d)) return { v: null, users: d };          // старый формат
+      if (d && Array.isArray(d.users)) return d;
+      return null;
     } catch (e) { return null; }
   }
-  const baseUsers = Array.isArray(AZS.users) ? AZS.users.slice() : [];
-  AZS.usersData = readLocalUsers() || baseUsers;
+  const cache = readCache();
+  /* Кэш используем только если он от той же версии файла. Иначе — файл. */
+  AZS.usersData = (cache && cache.v != null && cache.v === fileVersion) ? cache.users : baseUsers;
 
   AZS.saveUsersData = function (list) {
     AZS.usersData = (list || []).slice();
-    try { localStorage.setItem(USERS_KEY, JSON.stringify(AZS.usersData)); } catch (e) {}
+    try { localStorage.setItem(USERS_KEY, JSON.stringify({ v: AZS.usersUpdatedAt || fileVersion, users: AZS.usersData })); } catch (e) {}
   };
   AZS.resetUsersData = function () {
     AZS.usersData = baseUsers.slice();
