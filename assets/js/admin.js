@@ -31,6 +31,20 @@
     const d = new Date();
     return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
   }
+  /* Дата хранится в формате «дд.мм.гггг», а поле ввода требует «гггг-мм-дд».
+     Без этого преобразования при сохранении дата сбрасывалась на сегодняшнюю. */
+  function toInputDate(d) {
+    const s = String(d == null ? '' : d).trim();
+    let m = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(s);
+    if (m) return m[3] + '-' + m[2] + '-' + m[1];
+    m = /^(\d{4})-(\d{2})-(\d{2})/.exec(s);
+    if (m) return m[1] + '-' + m[2] + '-' + m[3];
+    return today();
+  }
+  function fromInputDate(v) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(v == null ? '' : v).trim());
+    return m ? (m[3] + '.' + m[2] + '.' + m[1]) : fromInputDate(today());
+  }
   const typeKey = (t) => (t === 'article' ? 'articles' : 'news');
   const typeLabel = (t) => (t === 'article' ? 'Статья' : 'Новость');
   const canCreate = (t, u) => AZS.can(typeKey(t) + '.create', u);
@@ -118,7 +132,7 @@
     const list = (AZS.newsData || [])
       .filter(x => (x.type || 'news') === type)
       .slice()
-      .sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')) || String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
+      .sort((a, b) => AZS.dateKey(b.date).localeCompare(AZS.dateKey(a.date)) || String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
     const rows = list.map(it => {
       const pub = it.status === 'published';
       return `<tr>
@@ -148,8 +162,7 @@
     const u = AZS.currentUser();
     const isNew = editingId === 'new';
     const item = isNew
-      ? { type: tab, date: today(), author: u.name || '', status: 'draft', html: '', excerpt: '', title: '', slug: '', img: '', tags: [] }
-      : (AZS.newsData || []).find(x => x.id === editingId);
+      ? { type: tab, date: fromInputDate(today()), author: u.name || '', status: 'draft', html: '', excerpt: '', title: '', slug: '', img: '', tags: [] }      : (AZS.newsData || []).find(x => x.id === editingId);
     if (!item) { editingId = null; return renderBody(); }
     const type = item.type || (tab === 'users' ? 'news' : tab);
     const canPub = canPublish(type, u);
@@ -160,7 +173,7 @@
         <div class="field"><label>Заголовок *</label><input name="title" required value="${esc(item.title || '')}"></div>
         <div class="admin__grid2">
           <div class="field"><label>Адрес (slug)</label><input name="slug" value="${esc(item.slug || '')}" placeholder="заполнится автоматически"></div>
-          <div class="field"><label>Дата</label><input name="date" type="date" value="${esc(item.date || today())}"></div>
+          <div class="field"><label>Дата</label><input name="date" type="date" value="${esc(toInputDate(item.date))}"></div>
           <div class="field"><label>Автор</label><input name="author" value="${esc(item.author || '')}"></div>
           <div class="field"><label>Обложка (путь или URL)</label><input name="img" value="${esc(item.img || '')}" placeholder="assets/img/..."></div>
         </div>
@@ -213,7 +226,7 @@
       type: t,
       title,
       slug: uniqueSlug(val('slug') || slugify(title, item.id), item.id),
-      date: val('date') || today(),
+      date: fromInputDate(val('date') || today()),
       author: val('author'),
       img: val('img'),
       excerpt: val('excerpt'),

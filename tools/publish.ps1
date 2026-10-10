@@ -25,6 +25,28 @@ function Find-Git {
   return $null
 }
 
+# Папка "Загрузки" берётся из настроек Windows (у каждого пользователя она своя,
+# часто не C:\Users\...\Downloads, а, например, D:\Downloads).
+function Find-Downloads {
+  $candidates = @()
+  try {
+    $sf = Get-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders' -ErrorAction Stop
+    $p = $sf.'{374DE290-123F-4565-9164-39C4925E467B}'
+    if ($p) { $candidates += $p }
+  } catch {}
+  try {
+    $usf = Get-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders' -ErrorAction Stop
+    $p = $usf.'{374DE290-123F-4565-9164-39C4925E467B}'
+    if ($p) { $candidates += [Environment]::ExpandEnvironmentVariables($p) }
+  } catch {}
+  if ($env:USERPROFILE) { $candidates += (Join-Path $env:USERPROFILE 'Downloads') }
+  $candidates += 'D:\Downloads'
+  $candidates += 'C:\Downloads'
+
+  foreach ($c in $candidates) { if ($c -and (Test-Path $c)) { return $c } }
+  return $null
+}
+
 $git = Find-Git
 if (-not $git) {
   Write-Host "*** Git не найден ***"
@@ -34,19 +56,35 @@ if (-not $git) {
   exit 1
 }
 
-Write-Host "[1/3] Проверяю папку Загрузки..."
-$dl = Join-Path $env:USERPROFILE 'Downloads'
-if (Test-Path $dl) {
+$dl = Find-Downloads
+Write-Host "[1/3] Проверяю папку Загрузки: $dl"
+if (-not $dl) {
+  Write-Host "      Не удалось определить папку Загрузки."
+} else {
+  # Отдельно ищем news.js и users.js. Учитываем копии вида "users (1).js".
   $jobs = @(
-    @{ filter = 'news*.js';  dest = 'data\news.js'  },
-    @{ filter = 'users*.js'; dest = 'data\users.js' }
+    @{ name = 'news';  dest = 'data\news.js';  parts = @('news', 'newsData', 'материалы') },
+    @{ name = 'users'; dest = 'data\users.js'; parts = @('users', 'пользователи') }
   )
   foreach ($j in $jobs) {
-    $f = Get-ChildItem -LiteralPath $dl -Filter $j.filter -File -ErrorAction SilentlyContinue |
-         Sort-Object LastWriteTime -Descending | Select-Object -First 1
-    if ($f) {
-      Move-Item -LiteralPath $f.FullName -Destination (Join-Path $root $j.dest) -Force
-      Write-Host ("      обновлён " + $j.dest)
+    $found = @()
+    foreach ($f in (Get-ChildItem -LiteralPath $dl -File -Filter '*.js' -ErrorAction SilentlyContinue)) {
+      $base = [IO.Path]::GetFileNameWithoutExtension($f.Name)   # например "users (1)"
+      $clean = ($base -replace '\s*\(\d+\)\s*$', '').Trim()      # убираем " (1)"
+      if ($j.parts -contains $clean.ToLower()) { $found += $f }
+    }
+    $destPath = Join-Path $root $j.dest
+    if ($found.Count) {
+      $f = $found | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+      $destTime = if (Test-Path $destPath) { (Get-Item -LiteralPath $destPath).LastWriteTime } else { [DateTime]::MinValue }
+      if ($f.LastWriteTime -gt $destTime) {
+        Copy-Item -LiteralPath $f.FullName -Destination $destPath -Force
+        Write-Host ("      обновлён " + $j.dest + "  <-  " + $f.Name)
+      } else {
+        Write-Host ("      " + $j.dest + " — свежее уже в проекте, скачанный файл старее (оставляю как есть)")
+      }
+    } else {
+      Write-Host ("      " + $j.dest + " — файл в Загрузках не найден (оставляю как есть)")
     }
   }
 }
@@ -57,8 +95,8 @@ Write-Host "[2/3] Ищу изменения..."
 if ($LASTEXITCODE -eq 0) {
   Write-Host ""
   Write-Host "      Изменений нет - публиковать нечего."
-  Write-Host "      Если вы редактировали новости в браузере, сначала нажмите"
-  Write-Host "      кнопку Скачать data/news.js в редакторе."
+  Write-Host "      Если вы редактировали материалы в браузере, сначала нажмите"
+  Write-Host "      кнопку Скачать в редакторе (data/news.js и data/users.js)."
   Write-Host ""
   Read-Host "Нажмите Enter, чтобы закрыть"
   exit 0

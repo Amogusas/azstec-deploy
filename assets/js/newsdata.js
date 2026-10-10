@@ -47,12 +47,24 @@
   /* Кэш используем только если он от той же версии файла. Иначе — файл. */
   AZS.newsData = AZS.normalizeItems((cache && cache.v != null && cache.v === fileVersion) ? cache.items : base);
 
-  /* Публичный сайт читает AZS.news / AZS.articles — только опубликованное. */
+  /* Ключ даты для сортировки. Понимает «дд.мм.гггг» и «гггг-мм-дд». */
+  AZS.dateKey = function (d) {
+    const s = String(d == null ? '' : d).trim();
+    let m = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(s);
+    if (m) return m[3] + m[2] + m[1];
+    m = /^(\d{4})-(\d{2})-(\d{2})/.exec(s);
+    if (m) return m[1] + m[2] + m[3];
+    return '00000000';
+  };
+
+  /* Публичный сайт читает AZS.news / AZS.articles — только опубликованное,
+     отсортированное по дате (сначала свежие). */
   AZS.applyNews = function () {
     const all = AZS.newsData || [];
     const pub = all.filter(n => n.status !== 'draft');
-    AZS.news = pub.filter(n => n.type === 'news');
-    AZS.articles = pub.filter(n => n.type === 'article');
+    const byDate = (a, b) => AZS.dateKey(b.date).localeCompare(AZS.dateKey(a.date));
+    AZS.news = pub.filter(n => n.type === 'news').sort(byDate);
+    AZS.articles = pub.filter(n => n.type === 'article').sort(byDate);
   };
 
   AZS.saveNewsData = function (list) {
