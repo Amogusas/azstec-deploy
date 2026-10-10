@@ -1,0 +1,44 @@
+/* AZS Technologies — редактор материалов (admin.html) */
+
+.admin-login{max-width:420px;margin:40px auto;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:clamp(20px,3vw,32px);box-shadow:var(--shadow)}
+.admin-login h1{font-size:1.4rem;margin-bottom:4px}
+.admin-login .form{max-width:none;margin-top:16px}
+.admin-login .notice{margin-top:4px}
+
+.admin__bar{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;margin-bottom:16px}
+.admin__bar h1{font-size:1.35rem;margin:0 0 2px}
+.admin__bar-actions{display:flex;flex-wrap:wrap;gap:8px}
+
+.admin__tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px;border-bottom:1px solid var(--line)}
+.admin__tab{background:none;border:0;border-bottom:3px solid transparent;padding:10px 14px;font-weight:700;color:var(--muted);margin-bottom:-1px}
+.admin__tab:hover{color:var(--ink)}
+.admin__tab.active{color:var(--ink);border-bottom-color:var(--brand)}
+
+.admin__head{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:14px}
+
+.admin__table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.admin__table th,.admin__table td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--line);font-size:.92rem;vertical-align:top}
+.admin__table th{background:#f8f9fb;font-size:.78rem;text-transform:uppercase;letter-spacing:.03em;color:var(--muted)}
+.admin__table tr:last-child td{border-bottom:0}
+.admin__row-actions{display:flex;flex-wrap:wrap;gap:6px}
+
+.tag-status{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.75rem;font-weight:800;white-space:nowrap}
+.tag-status.pub{background:#e3f6ea;color:#1f7a45}
+.tag-status.draft{background:var(--brand-l);color:var(--brand-d)}
+
+.admin__editor{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:clamp(18px,3vw,26px)}
+.admin__editor h2{font-size:1.2rem;margin-bottom:16px}
+.admin__grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.admin__editor .form{max-width:none}
+
+.admin-note{background:var(--brand-l);border:1px solid #f0dca6;border-radius:var(--radius-s);padding:12px 16px;margin-bottom:16px;font-size:.9rem;color:#6a5410}
+
+.perm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:6px 18px;border:1px solid var(--line);border-radius:var(--radius-s);padding:14px;background:#fafbfc}
+.perm-grid label{display:flex;gap:9px;align-items:flex-start;font-size:.9rem;padding:4px 0;font-weight:500}
+.perm-grid .pg-title{grid-column:1/-1;font-weight:800;font-size:.8rem;text-transform:uppercase;letter-spacing:.04em;color:var(--brand-d);margin-top:8px}
+.perm-grid .pg-title:first-child{margin-top:0}
+
+@media (max-width:640px){
+  .admin__grid2{grid-template-columns:1fr}
+  .admin__table{display:block;overflow-x:auto;white-space:nowrap}
+}

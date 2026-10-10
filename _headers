@@ -1,0 +1,25 @@
+# Cloudflare Pages — заголовки
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
+
+# Хеш-версия в ссылках (?v=) позволяет кэшировать надолго
+/assets/css/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/assets/js/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/assets/img/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Файлы данных редактора могут обновляться — короткий кэш
+/data/*
+  Cache-Control: public, max-age=600
+
+# Страницы всегда проверяем, чтобы правки сразу были видны
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
