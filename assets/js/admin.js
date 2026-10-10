@@ -369,6 +369,7 @@
       permissions
     });
     const pw = val('password');
+    delete out.passwordless;   /* на всякий случай убираем старый флаг входа без пароля */
     if (isNew && !pw) { AZS.toast('Задайте пароль'); return; }
     if (pw) { out.salt = AZS.newSalt(); out.hash = await AZS.hashPassword(pw, out.salt); }
     if (isNew) { out.id = uid('u'); out.createdAt = new Date().toISOString(); }
