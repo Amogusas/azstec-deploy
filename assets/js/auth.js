@@ -118,12 +118,6 @@
     const u = AZS.findUserByLogin(login);
     if (!u) return { ok: false, message: 'Пользователь с таким логином не найден.' };
     if (u.active === false) return { ok: false, message: 'Учётная запись отключена.' };
-    /* Временный вход без пароля: у пользователя стоит флаг passwordless.
-       Как только зададите пароль в редакторе, флаг снимется. */
-    if (u.passwordless === true) {
-      try { localStorage.setItem(SESSION_KEY, JSON.stringify({ uid: u.id, ts: Date.now() })); } catch (e) {}
-      return { ok: true, user: u, passwordless: true };
-    }
     const h = await AZS.hashPassword(password, u.salt);
     if (h !== u.hash) return { ok: false, message: 'Неверный пароль.' };
     try { localStorage.setItem(SESSION_KEY, JSON.stringify({ uid: u.id, ts: Date.now() })); } catch (e) {}

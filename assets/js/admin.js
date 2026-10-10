@@ -66,7 +66,7 @@
         <p class="muted">Вход для сотрудников сайта. Права доступа выдаёт администратор.</p>
         <form class="form" id="admin-login-form">
           <div class="field"><label>Логин</label><input name="login" required autocomplete="username" value="admin"></div>
-          <div class="field"><label>Пароль</label><input name="password" type="password" autocomplete="current-password" placeholder="если пароль не задан — оставьте пустым"></div>
+          <div class="field"><label>Пароль</label><input name="password" type="password" required autocomplete="current-password"></div>
           <button class="btn btn--block" type="submit">Войти</button>
           ${msg ? `<div class="notice">${esc(msg)}</div>` : ''}
         </form>
@@ -267,11 +267,9 @@
   function renderUsers(host) {
     const u = AZS.currentUser();
     const list = AZS.usersData || [];
-    const hasPasswordless = list.some(x => x.passwordless === true);
     host.innerHTML = `
       <div class="admin-note">Права выдаются каждому сотруднику отдельно. Роль задаёт набор по умолчанию, а галочки ниже можно включать и выключать индивидуально.
         Пароли хранятся в виде хэша в файле <b>data/users.js</b> — это защита от случайных правок, а не от злоумышленников.</div>
-      ${hasPasswordless ? `<div class="notice" style="margin-bottom:16px">Включён временный вход без пароля. Задайте пароль в карточке пользователя и снова выгрузите <b>data/users.js</b>, чтобы закрыть доступ.</div>` : ''}
       <div class="admin__head">
         <h2 style="margin:0">Пользователи <span class="muted small">(${list.length})</span></h2>
         <div class="admin__row-actions">
@@ -285,7 +283,7 @@
           <td>${esc(x.name || '')}${x.id === u.id ? ' <span class="muted small">(это вы)</span>' : ''}</td>
           <td>${esc(x.login)}</td>
           <td>${esc((AZS.ROLES[x.role] || {}).label || x.role)}</td>
-          <td>${x.active === false ? '<span class="tag-status draft">Отключён</span>' : (x.passwordless === true ? '<span class="tag-status draft">Без пароля</span>' : '<span class="tag-status pub">Активен</span>')}</td>
+          <td>${x.active === false ? '<span class="tag-status draft">Отключён</span>' : '<span class="tag-status pub">Активен</span>'}</td>
           <td><div class="admin__row-actions">
             <button class="btn btn--ghost btn--sm" data-act="edit-user" data-id="${esc(x.id)}">Изменить</button>
             ${x.id !== u.id ? `<button class="btn btn--ghost btn--sm" data-act="del-user" data-id="${esc(x.id)}">Удалить</button>` : ''}
@@ -372,7 +370,7 @@
     });
     const pw = val('password');
     if (isNew && !pw) { AZS.toast('Задайте пароль'); return; }
-    if (pw) { out.salt = AZS.newSalt(); out.hash = await AZS.hashPassword(pw, out.salt); out.passwordless = false; }
+    if (pw) { out.salt = AZS.newSalt(); out.hash = await AZS.hashPassword(pw, out.salt); }
     if (isNew) { out.id = uid('u'); out.createdAt = new Date().toISOString(); }
     if (out.id === me.id && !permissions['users.manage'] && !confirm('Вы отключаете себе право «Управление пользователями». Продолжить?')) return;
 
