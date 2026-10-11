@@ -106,7 +106,7 @@
       <div class="tb-links"><a href="${c.wa}" target="_blank" rel="noopener">WhatsApp</a><a href="mailto:${c.email}">${c.email}</a></div>
     </div></div>
     <div class="header-main"><div class="container">
-      <a class="logo" href="${lnk('index.html')}"><span class="mark">АЗС</span><span>${c.name}<small>AZS TECHNOLOGIES</small></span></a>
+      <a class="logo" href="${lnk('index.html')}"><span class="mark"><img class="mark__img" src="${lnk('assets/img/logo.png')}" alt="АЗС Технологии" onerror="this.onerror=null;this.src='${lnk('assets/img/logo.svg')}'"></span><span>${c.name}<small>AZS TECHNOLOGIES</small></span></a>
       <nav class="nav">${nav}</nav>
       <div class="header-actions">
         <a class="icon-btn" href="${lnk('search.html')}" title="Поиск" aria-label="Поиск">${ICON.search}</a>
@@ -124,7 +124,7 @@
     return `
     <div class="drawer__scrim" data-close-drawer></div>
     <aside class="drawer__panel" aria-label="Меню">
-      <div class="drawer__close"><a class="logo" href="${lnk('index.html')}"><span class="mark">АЗС</span><span>${AZS.COMPANY.name}</span></a>
+      <div class="drawer__close"><a class="logo" href="${lnk('index.html')}"><span class="mark"><img class="mark__img" src="${lnk('assets/img/logo.png')}" alt="АЗС Технологии" onerror="this.onerror=null;this.src='${lnk('assets/img/logo.svg')}'"></span><span>${AZS.COMPANY.name}</span></a>
         <button class="icon-btn" data-close-drawer aria-label="Закрыть">${ICON.close}</button></div>
       <div class="drawer__direct">${items}</div>
       <div style="padding:16px 6px"><a class="btn btn--block" href="tel:${AZS.COMPANY.phoneHref}">${ICON.phone} ${AZS.COMPANY.phone}</a>
@@ -138,7 +138,7 @@
     return `
     <div class="container"><div class="footer-grid">
       <div>
-        <a class="logo" href="${lnk('index.html')}" style="color:#fff"><span class="mark">АЗС</span><span>${c.name}<small>AZS TECHNOLOGIES</small></span></a>
+        <a class="logo" href="${lnk('index.html')}" style="color:#fff"><span class="mark"><img class="mark__img" src="${lnk('assets/img/logo.png')}" alt="АЗС Технологии" onerror="this.onerror=null;this.src='${lnk('assets/img/logo.svg')}'"></span><span>${c.name}<small>AZS TECHNOLOGIES</small></span></a>
         <p class="small" style="margin-top:14px">Поставка оборудования, сервис, ремонт, проектирование и строительство АЗС, АГЗС и нефтебаз.</p>
       </div>
       ${col('Магазин', [['Интернет-магазин','shop.html'],['Корзина','cart.html'],['Поиск','search.html'],['Новости','news.html'],['Статьи','articles.html']])}
